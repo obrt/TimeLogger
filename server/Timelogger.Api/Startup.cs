@@ -6,6 +6,11 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Hosting;
 using Timelogger.Entities;
+using Timelogger.BusinessLogic.Services;
+using Timelogger.BusinessLogic.Services.Implementation;
+using System.Collections.Generic;
+using System;
+using System.Linq;
 
 namespace Timelogger.Api
 {
@@ -38,8 +43,11 @@ namespace Timelogger.Api
 			});
 
 			services.AddMvc(options => options.EnableEndpointRouting = false);
+            services.AddScoped<ICustomerService, CustomerService>();
+            services.AddScoped<IProjectService, ProjectService>();
+            services.AddScoped<ITimelogService, TimelogService>();
 
-			if (_environment.IsDevelopment())
+            if (_environment.IsDevelopment())
 			{
 				services.AddCors();
 			}
@@ -68,16 +76,81 @@ namespace Timelogger.Api
 
 		private static void SeedDatabase(IServiceScope scope)
 		{
-			var context = scope.ServiceProvider.GetService<ApiContext>();
-			var testProject1 = new Project
-			{
-				Id = 1,
-				Name = "e-conomic Interview"
-			};
+            {
+                var context = scope.ServiceProvider.GetService<ApiContext>();
+                var developer = new Developer
+                {
+                    FirstName = "Ben",
+                    LastName = "Quick",
+                    UserName = "benQuick",
+                    Email = "ben.quick@malazan.com",
+                    Password = "unsecure"
+                };
+                context.Developers.Add(developer);                
+                context.SaveChanges(); // Save changes to generate IDs
 
-			context.Projects.Add(testProject1);
+                var customer1 = new Customer
+                {
+                    Name = "The Empire",
+                    DeveloperId = 1,
+                    //Projects = new List<Project>()
+                };
+                var customer2 = new Customer
+                {
+                    Name = "Seven cities",
+                    DeveloperId = 1,
+                    Projects = new List<Project>()
+                };
+                context.Customers.AddRange(customer1, customer2);                
+                context.SaveChanges();
+                context.Developers.FirstOrDefault().Customers = context.Customers.ToList();
 
-			context.SaveChanges();
-		}
-	}
+                var projects = new List<Project>();
+                for (int i = 1; i <= 5; i++)
+                {
+                    var project = new Project
+                    {
+                        Name = $"Project {i}",
+                        CustomerId = (i % 2 == 0) ? customer2.Id : customer1.Id,
+                        DeveloperId = developer.Id,
+                        Deadline = DateTime.Now.AddDays(30 * i),
+                        IsFinished = (i % 2 == 0),
+                        Timelogs = new List<Timelog>()
+                    };
+                    projects.Add(project);                    
+                }
+                context.Projects.AddRange(projects);
+                context.SaveChanges();
+                foreach (var project in context.Projects)
+                {
+                    context.Customers.FirstOrDefault(c => c.Id == project.CustomerId ).Projects.Add(project);
+                }
+                context.SaveChanges();
+
+
+                foreach (var project in projects)
+                {
+                    for (int j = 1; j <= 3; j++)
+                    {
+                        var timelog = new Timelog
+                        {
+                            DeveloperId = developer.Id,
+                            ProjectId = project.Id,
+                            TimeInMinutes = 60 * j
+                        };
+                        context.Timelogs.Add(timelog);
+                        
+                    }
+                    context.SaveChanges();
+
+                    foreach (var timelog in context.Timelogs)
+                    {
+                        context.Projects.FirstOrDefault(p => p.Id == timelog.ProjectId).Timelogs.Add(timelog);
+                    }
+                    context.SaveChanges();
+                }                
+            }
+        }
+
+    }
 }

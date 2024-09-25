@@ -1,29 +1,151 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
+using System;
+using System.ComponentModel.DataAnnotations;
+using System.Linq;
+using System.Threading.Tasks;
+using Timelogger.BusinessLogic.Services;
+using Timelogger.BusinessLogic.Services.Implementation;
+using Timelogger.DTO.Requests.Customer;
+using Timelogger.DTO.Requests.Project;
+using Timelogger.Entities;
 
 namespace Timelogger.Api.Controllers
 {
-	[Route("api/[controller]")]
+    [Route("api/[controller]")]
 	public class ProjectsController : Controller
 	{
-		private readonly ApiContext _context;
+		private readonly IProjectService _projectService;
+		private readonly ILogger<ProjectsController> _logger;
 
-		public ProjectsController(ApiContext context)
+		public ProjectsController(IProjectService projectService, ILogger<ProjectsController> logger)
 		{
-			_context = context;
+			_projectService = projectService;
+			_logger = logger;
 		}
 
-		[HttpGet]
-		[Route("hello-world")]
-		public string HelloWorld()
+        [HttpGet("{id}")]
+        public async Task<IActionResult> Get(int id)
 		{
-			return "Hello Back!";
+			try
+			{
+                var project = await _projectService.GetProjectAsync(id);
+				if (project == null) 
+				{
+					return NotFound();
+				}
+				return Ok(project);
+			}
+			catch (Exception ex) 
+			{
+                _logger.LogError(ex, $"Exception occured while getting a project with Id {id}!");
+                return StatusCode(500, ex.Message);
+            }			
 		}
 
-		// GET api/projects
-		[HttpGet]
-		public IActionResult Get()
+        [HttpGet]
+        public async Task<IActionResult> Get([FromBody][Required] GetAllProjectsRequest request)
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToList();
+                    return BadRequest(errors);
+                }
+                var projects = await _projectService.GetAllProjectsAsync(request);
+                return Ok(projects);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Exception occured while getting all projects!");
+                return StatusCode(500, ex.Message);
+            }
+        }
+
+        [HttpPost]
+		public async Task<IActionResult> Post([FromBody][Required] CreateProjectRequest request)
 		{
-			return Ok(_context.Projects);
+			try
+			{
+				if (!ModelState.IsValid)
+				{
+                    var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToList();
+					return BadRequest(errors);
+                }
+                var response = await _projectService.CreateProjectAsync(request);
+
+				return Ok(response);
+            }
+			catch (Exception ex)
+			{
+                _logger.LogError(ex, $"Exception occured while creating a project!");
+                return StatusCode(500, ex.Message);
+            }			
 		}
-	}
+
+		[HttpPut]
+		public async Task<IActionResult> Put([FromBody][Required] UpdateProjectRequest request)
+		{
+			try
+			{
+                if (!ModelState.IsValid)
+				{
+                    var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToList();
+                    return BadRequest(errors);
+                }
+
+				var response = await _projectService.UpdateProjectAsync(request);
+				return Ok(response);
+            }
+			catch (Exception ex)
+			{
+                _logger.LogError(ex, $"Exception occured while updating a project with Id {request.Id}!");
+                return StatusCode(500, ex.Message);
+            }
+		}
+
+        [HttpDelete]
+        public async Task<IActionResult> Delete([FromBody][Required] DeleteProjectRequest request)
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToList();
+                    return BadRequest(errors);
+                }
+
+                var response = await _projectService.DeleteProjectAsync(request);
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Exception occured while deliting selected projects!");
+                return StatusCode(500, ex.Message);
+            }
+        }
+
+        [HttpPut]
+        public async Task<IActionResult> FinishProjects([FromBody][Required] FinishProjectsRequest request) //TODO check ModelState.IsValid when list is empty?
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToList();
+                    return BadRequest(errors);
+                }
+
+                var response = await _projectService.FinishProjectAsync(request);
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Exception occured while finishing selected projects!");
+                return StatusCode(500, ex.Message);
+            }
+        }
+    }
 }
