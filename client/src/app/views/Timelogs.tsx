@@ -83,7 +83,7 @@ export default function Timelogs() {
         setShowModal(true);
     };
 
-    const handleSave = async () => {        
+    const handleSave = async () => {
         if (isUpdate) {
             await updateTimelog(formData);
         } else {
@@ -95,7 +95,35 @@ export default function Timelogs() {
 
     const handleInputChange = (e: React.ChangeEvent<HTMLSelectElement | HTMLInputElement>) => {
         const { name, value } = e.target;
-        setFormData(prevState => ({ ...prevState, [name]: value, [name]: name === 'timeInMinutes' ? Number(value) : value }));
+            
+        if (name === 'projectName') {
+            const selectedProject = projects.find(project => project.name === value);
+            if (selectedProject) {
+                setFormData(prevState => ({
+                    ...prevState,
+                    projectName: selectedProject.name,
+                    projectId: selectedProject.id
+                }));
+            }
+        } 
+
+        if (name === 'developerName') {
+            const selectedDeveloper = developers.find(project => value === project.firstName + " " + project.lastName);
+            if (selectedDeveloper) {
+                setFormData(prevState => ({
+                    ...prevState,
+                    developerName: selectedDeveloper.firstName,
+                    developerId: selectedDeveloper.id
+                }));
+            }
+        }
+
+        else {
+            setFormData(prevState => ({
+                ...prevState,
+                [name]: name === 'timeInMinutes' || name === 'projectId' ? Number(value) : value
+            }));
+        }
     };
 
     const handleDelete = () => {

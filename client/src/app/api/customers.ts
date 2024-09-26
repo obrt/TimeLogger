@@ -8,7 +8,6 @@ export async function getAll() {
 import { Customer } from '../types';
 
 export const GetAllCustomers = async (developerId: number): Promise<Customer[]> => {
-    console.log("BBBBBBBBBBBBBBB", developerId);
     const response = await fetch(`${BASE_URL}/customers/getall`, {
         method: 'POST',
         headers: {

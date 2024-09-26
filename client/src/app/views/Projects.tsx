@@ -94,7 +94,34 @@ export default function Projects() {
 
     const handleInputChange = (e: React.ChangeEvent<HTMLSelectElement | HTMLInputElement>) => {
         const { name, value } = e.target;
-        setFormData(prevState => ({ ...prevState, [name]: value }));
+
+        if (name === 'customerName') {
+            const selectedCustomer = customers.find(customer => customer.name === value);
+            if (selectedCustomer) {
+                setFormData(prevState => ({
+                    ...prevState,
+                    customerName: selectedCustomer.name,
+                    customerId: selectedCustomer.id
+                }));
+            }
+        } 
+
+        if (name === 'developerName') {
+            const selectedDeveloper = developers.find(project => value === project.firstName + " " + project.lastName);
+            if (selectedDeveloper) {
+                setFormData(prevState => ({
+                    ...prevState,
+                    developerName: selectedDeveloper.firstName,
+                    developerId: selectedDeveloper.id
+                }));
+            }
+        }
+
+        else {
+            setFormData(prevState => ({ ...prevState, [name]: value }));
+        }
+
+        
     };
 
     const handleDelete = () => {

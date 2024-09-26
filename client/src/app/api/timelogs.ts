@@ -37,7 +37,7 @@ export const createTimelog = async (timelog: Timelog): Promise<void> => {
     if (!response.ok) throw new Error('Failed to create timelog');
 };
 
-export const updateTimelog = async (timelog: Timelog): Promise<void> => {    
+export const updateTimelog = async (timelog: Timelog): Promise<void> => {
     const response = await fetch(`${BASE_URL}/timelogs/`, {
         method: 'PUT',
         headers: {

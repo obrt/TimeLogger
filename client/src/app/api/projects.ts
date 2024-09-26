@@ -14,12 +14,10 @@ export const getAllProjects = async (developerId: number): Promise<Project[]> =>
         throw new Error('Failed to fetch timelogs');
     }
     const data = await response.json();
-    console.log(data);
     return data.projects;
 };
 
 export const createProject = async (project: Project): Promise<void> => {
-    console.log(JSON.stringify(project))
     const response = await fetch(`${BASE_URL}/projects`, {
         method: 'POST',
         headers: {
@@ -30,15 +28,7 @@ export const createProject = async (project: Project): Promise<void> => {
     if (!response.ok) throw new Error('Failed to create project');
 };
 
-export const updateProject = async (project: Project): Promise<void> => {
-    console.log(JSON.stringify({
-        id: project.id,
-        name: project.name,
-        developerId: project.developerId,
-        customerId: project.customerId,
-        deadline: project.deadline,
-        isFinished: project.isFinished
-    }))
+export const updateProject = async (project: Project): Promise<void> => {    
     const response = await fetch(`${BASE_URL}/projects/updateproject`, {
         method: 'POST',
         headers: {
