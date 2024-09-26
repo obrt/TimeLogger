@@ -31,10 +31,8 @@ namespace Timelogger.Api
 			Configuration = builder.Build();
 		}
 
-		// This method gets called by the runtime. Use this method to add services to the container.
 		public void ConfigureServices(IServiceCollection services)
 		{
-			// Add framework services.
 			services.AddDbContext<ApiContext>(opt => opt.UseInMemoryDatabase("e-conomic interview"));
 			services.AddLogging(builder =>
 			{
@@ -46,25 +44,26 @@ namespace Timelogger.Api
             services.AddScoped<ICustomerService, CustomerService>();
             services.AddScoped<IProjectService, ProjectService>();
             services.AddScoped<ITimelogService, TimelogService>();
+            services.AddScoped<IDeveloperService, DeveloperService>();
 
-            if (_environment.IsDevelopment())
-			{
-				services.AddCors();
-			}
-		}
+            services.AddCors(options =>
+            {
+                options.AddPolicy("DefaultPolicy", builder =>
+                {
+                    builder
+                        .AllowAnyMethod()
+                        .AllowAnyHeader()
+                        .AllowCredentials()
+                        .SetIsOriginAllowed(origin => true);
+                });
+            });
+        }
 
 		public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
 		{
-			if (env.IsDevelopment())
-			{
-				app.UseCors(builder => builder
-					.AllowAnyMethod()
-					.AllowAnyHeader()
-					.SetIsOriginAllowed(origin => true)
-					.AllowCredentials());
-			}
+            app.UseCors("DefaultPolicy");
 
-			app.UseMvc();
+            app.UseMvc();
 
 
 			var serviceScopeFactory = app.ApplicationServices.GetService<IServiceScopeFactory>();
@@ -93,13 +92,15 @@ namespace Timelogger.Api
                 {
                     Name = "The Empire",
                     DeveloperId = 1,
-                    //Projects = new List<Project>()
+                    Projects = new List<Project>(),
+                    Developer = developer
                 };
                 var customer2 = new Customer
                 {
                     Name = "Seven cities",
                     DeveloperId = 1,
-                    Projects = new List<Project>()
+                    Projects = new List<Project>(),
+                    Developer = developer
                 };
                 context.Customers.AddRange(customer1, customer2);                
                 context.SaveChanges();
@@ -115,7 +116,9 @@ namespace Timelogger.Api
                         DeveloperId = developer.Id,
                         Deadline = DateTime.Now.AddDays(30 * i),
                         IsFinished = (i % 2 == 0),
-                        Timelogs = new List<Timelog>()
+                        Timelogs = new List<Timelog>(),
+                        Customer = customer1,
+                        Developer = developer
                     };
                     projects.Add(project);                    
                 }
@@ -123,7 +126,7 @@ namespace Timelogger.Api
                 context.SaveChanges();
                 foreach (var project in context.Projects)
                 {
-                    context.Customers.FirstOrDefault(c => c.Id == project.CustomerId ).Projects.Add(project);
+                    context.Customers.FirstOrDefault(x => x.Id == project.CustomerId ).Projects.Add(project);
                 }
                 context.SaveChanges();
 
@@ -136,7 +139,9 @@ namespace Timelogger.Api
                         {
                             DeveloperId = developer.Id,
                             ProjectId = project.Id,
-                            TimeInMinutes = 60 * j
+                            TimeInMinutes = 60 * j,
+                            Project = project,
+                            Developer = developer
                         };
                         context.Timelogs.Add(timelog);
                         
@@ -145,10 +150,11 @@ namespace Timelogger.Api
 
                     foreach (var timelog in context.Timelogs)
                     {
-                        context.Projects.FirstOrDefault(p => p.Id == timelog.ProjectId).Timelogs.Add(timelog);
+                        context.Projects.FirstOrDefault(x => x.Id == timelog.ProjectId).Timelogs.Add(timelog);
                     }
-                    context.SaveChanges();
-                }                
+                    
+                }
+                context.SaveChanges();
             }
         }
 

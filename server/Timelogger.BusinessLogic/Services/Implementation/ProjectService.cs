@@ -6,6 +6,7 @@ using Timelogger.DTO.Requests.Project;
 using Timelogger.DTO.Responses.Project;
 using System.Linq;
 using System.ComponentModel.DataAnnotations;
+using System.Text.RegularExpressions;
 
 namespace Timelogger.BusinessLogic.Services.Implementation
 {
@@ -20,14 +21,19 @@ namespace Timelogger.BusinessLogic.Services.Implementation
 
         public async Task<GetProjectResponse> GetProjectAsync(int request)
         {
-            var project = await _context.Projects.FirstAsync(p => p.Id == request);
+            var project = await _context.Projects.FirstAsync(x => x.Id == request);
+            var timeLogs = _context.Timelogs.ToList().Where(x => x.ProjectId == request);
             var response = new GetProjectResponse
             {
                 Id = project.Id,
                 Name = project.Name,
-                CustomerId = project.CustomerId,
-                Deadline = project.Deadline,
+                CustomerId = project.Customer.Id,
+                CustomerName = project.Developer.FirstName + " " + project.Developer.LastName,
+                Deadline = project.Deadline.ToString("yyyy-MM-dd"),
                 IsFinished = project.IsFinished,
+                DeveloperId = project.Developer.Id,
+                DeveloperName = project.Developer.FirstName + " " + project.Developer.LastName,
+                TotalTimeLogged = timeLogs.Sum(x => x.TimeInMinutes)
             };
 
             return response;
@@ -35,7 +41,7 @@ namespace Timelogger.BusinessLogic.Services.Implementation
 
         public async Task<GetAllProjectsResponse> GetAllProjectsAsync(GetAllProjectsRequest request)
         {
-            var projects = await _context.Projects.Where(p => p.DeveloperId == request.DeveloperId).ToListAsync();
+            var projects = await _context.Projects.Where(x => x.DeveloperId == request.DeveloperId).Include(x => x.Developer).Include(x => x.Customer).ToListAsync();
             var response = new GetAllProjectsResponse
             {
                 Projects = new List<GetProjectResponse>()
@@ -43,13 +49,18 @@ namespace Timelogger.BusinessLogic.Services.Implementation
 
             foreach (var project in projects) 
             {
+                var timeLogs = _context.Timelogs.ToList().Where(x => x.ProjectId == project.Id);
                 var singleProject = new GetProjectResponse
                 {
                     Id = project.Id,
                     Name = project.Name,
-                    CustomerId = project.CustomerId,
-                    Deadline = project.Deadline,
+                    CustomerId = project.Customer.Id,
+                    CustomerName = project.Customer.Name,
+                    Deadline = project.Deadline.ToString("yyyy-MM-dd"),
                     IsFinished = project.IsFinished,
+                    DeveloperId = project.Developer.Id,
+                    DeveloperName = project.Developer.FirstName + " " + project.Developer.LastName,
+                    TotalTimeLogged = timeLogs.Sum(x => x.TimeInMinutes)
                 };
                 response.Projects.Add(singleProject);
             }
@@ -78,7 +89,7 @@ namespace Timelogger.BusinessLogic.Services.Implementation
 
         public async Task<UpdateProjectResponse> UpdateProjectAsync(UpdateProjectRequest request)
         {
-            var project = await _context.Projects.FirstAsync(p => p.Id == request.Id);
+            var project = await _context.Projects.FirstAsync(x => x.Id == request.Id);
             project.Name = request.Name;
             project.CustomerId = request.CustomerId;
             project.Deadline = request.Deadline;
@@ -98,7 +109,7 @@ namespace Timelogger.BusinessLogic.Services.Implementation
             string projectsListString = string.Empty;
             foreach (var id in request.ProjectIds)
             {
-                var project = await _context.Projects.Include(p => p.Timelogs).FirstOrDefaultAsync(p => p.Id == id);
+                var project = await _context.Projects.Include(x => x.Timelogs).FirstOrDefaultAsync(x => x.Id == id);
                 projects.Add(project);                
                 projectsListString += $" {project.Id}";
             }
@@ -125,7 +136,7 @@ namespace Timelogger.BusinessLogic.Services.Implementation
             string projectLists = string.Empty;
             foreach (var id in request.ProjectIds)
             {
-                var currentProject = await _context.Projects.FirstAsync(p => p.Id == id);
+                var currentProject = await _context.Projects.FirstAsync(x => x.Id == id);
                 currentProject.IsFinished = true;
                 projectLists += $" {currentProject.Id}";
             }

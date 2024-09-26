@@ -1,3 +1,76 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+table {
+    width: 100%;
+    border-collapse: collapse;  /* Ensures no space between borders */
+}
+
+table th, table td {
+    border: 1px solid #ddd;  /* Adds border to table headers and data cells */
+    padding: 8px;
+}
+
+table tr.selected {
+    background-color: #b3d4fc !important; /* Ensure the selected row color overrides any default styles */
+}
+
+table tr:nth-child(even) {
+    background-color: #f2f2f2; /* Optional: Style for even rows */
+}
+
+table tr:nth-child(even) {
+    background-color: #f2f2f2;  /* Adds a subtle background for even rows */
+}
+
+table th {
+    padding-top: 12px;
+    padding-bottom: 12px;
+    text-align: left;
+    background-color: #4CAF50;
+    color: white;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;  /* Ensures no space between borders */
+}
+
+table th, table td {
+    border: 1px solid #ddd;  /* Adds border to table headers and data cells */
+    padding: 8px;
+}
+
+table tr.selected {
+    background-color: #b3d4fc !important; /* Ensure the selected row color overrides any default styles */
+}
+
+table tr:nth-child(even) {
+    background-color: #f2f2f2; /* Optional: Style for even rows */
+}
+
+table tr:nth-child(even) {
+    background-color: #f2f2f2;  /* Adds a subtle background for even rows */
+}
+
+table th {
+    padding-top: 12px;
+    padding-bottom: 12px;
+    text-align: left;
+    background-color: #4CAF50;
+    color: white;
+}
+
+th {
+    cursor: pointer;
+    user-select: none;
+}
+
+th::after {
+    margin-left: 5px;
+}
+
+th:hover {
+    text-decoration: underline;
+}

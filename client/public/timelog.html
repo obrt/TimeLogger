@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Timelogs</title>
+    <link rel="stylesheet" href="styles.css">  <!-- Include your stylesheets here -->
+</head>
+<body>
+    <div class="timelogs-container">
+        <h2>Timelogs</h2>
+
+        <!-- Search input -->
+        <input type="text" id="searchInput" placeholder="Search timelogs..." />
+
+        <!-- Timelog Table -->
+        <table id="timelogTable" class="table">
+            <thead>
+                <tr>
+                    <th>Id</th>
+                    <th>Project Name</th>
+                    <th>Developer Name</th>
+                    <th>Time Logged</th>
+                </tr>
+            </thead>
+            <tbody id="timelogTableBody">
+                <!-- Timelogs will be dynamically inserted here -->
+            </tbody>
+        </table>
+
+        <!-- Actions -->
+        <div class="actions">
+            <button id="createButton">Create Timelog</button>
+            <button id="updateButton" disabled>Update Timelog</button>
+            <button id="deleteButton" disabled>Delete Timelog</button>
+        </div>
+
+        <!-- Timelog form (for creating/updating) -->
+        <div id="timelogForm" class="modal">
+            <h3 id="formTitle">Create Timelog</h3>
+            <label for="projectName">Project Name:</label>
+            <input type="text" id="projectName" placeholder="Enter project name" />
+            <label for="developerName">Developer Name:</label>
+            <input type="text" id="developerName" placeholder="Enter developer name" />
+            <label for="timeLogged">Time Logged:</label>
+            <input type="text" id="timeLogged" placeholder="Enter developer name" />
+            <button id="saveButton">Save</button>
+            <button id="cancelButton">Cancel</button>
+        </div>
+    </div>
+
+    <script src="scripts.js"></script> <!-- Your custom script to handle CRUD operations -->
+</body>
+</html>

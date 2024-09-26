@@ -20,14 +20,15 @@ namespace Timelogger.BusinessLogic.Services.Implementation
             _context = context;
         }
 
-        public async Task<GetCustomerResponse> GetCustomerAsync(int request)
+        public async Task<GetCustomerResponse> GetCustomerAsync(int id)
         {
-            var customer = await _context.Customers.FirstAsync(p => p.Id == request);
+            var customer = await _context.Customers.FirstAsync(x => x.Id == id);
             var response = new GetCustomerResponse
             {
                 Id = customer.Id,
                 Name = customer.Name,
-                DeveloperId = customer.DeveloperId
+                DeveloperId = customer.DeveloperId,
+                DeveloperName = customer.Developer.FirstName + " " + customer.Developer.LastName
             };
 
             return response;
@@ -35,7 +36,7 @@ namespace Timelogger.BusinessLogic.Services.Implementation
 
         public async Task<GetAllCustomersResponse> GetAllCustomersAsync(GetAllCustomersRequest request)
         {
-            var customers = await _context.Customers.Where(c => c.DeveloperId == request.DeveloperId).ToListAsync();
+            var customers = await _context.Customers.Where(x => x.DeveloperId == request.DeveloperId).Include(x => x.Developer).ToListAsync();
             var response = new GetAllCustomersResponse
             {
                 Customers = new List<GetCustomerResponse>()
@@ -48,6 +49,7 @@ namespace Timelogger.BusinessLogic.Services.Implementation
                     Id = customer.Id,
                     Name = customer.Name,
                     DeveloperId = customer.DeveloperId,
+                    DeveloperName = customer.Developer.FirstName + " " + customer.Developer.LastName
                 };
 
                 response.Customers.Add(singleCustomer);
@@ -75,7 +77,7 @@ namespace Timelogger.BusinessLogic.Services.Implementation
 
         public async Task<UpdateCustomerResponse> UpdateCustomerAsync(UpdateCustomerRequest request)
         {
-            var customer = await _context.Customers.FirstAsync(c => c.Id == request.Id);
+            var customer = await _context.Customers.FirstAsync(x => x.Id == request.Id);
             customer.Name = request.Name;
             await _context.SaveChangesAsync();
 
@@ -91,9 +93,9 @@ namespace Timelogger.BusinessLogic.Services.Implementation
             foreach (var id in request.CustomerIds)
             {
                 var customer = await _context.Customers
-                    .Include(c => c.Projects)
-                    .ThenInclude(p => p.Timelogs)
-                    .FirstOrDefaultAsync(c => c.Id == id);
+                    .Include(x => x.Projects)
+                    .ThenInclude(x => x.Timelogs)
+                    .FirstOrDefaultAsync(x => x.Id == id);
                 customers.Add(customer);
                 customerListString += $" {customer.Id}";
             }

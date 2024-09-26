@@ -7,13 +7,13 @@ namespace Timelogger.DTO.Requests.Timelog
 {
     public class UpdateTimelogRequest
     {
-        [Range(0, int.MaxValue, ErrorMessage = "Id must be larger than zero!")]
+        [Range(1, int.MaxValue, ErrorMessage = "Id must be larger than zero!")]
         public int Id { get; set; }
 
-        [Range(0, int.MaxValue, ErrorMessage = "DeveloperId must be larger than zero!")]
+        [Range(1, int.MaxValue, ErrorMessage = "DeveloperId must be larger than zero!")]
         public int DeveloperId { get; set; }
 
-        [Range(0, int.MaxValue, ErrorMessage = "ProjectId must be larger than zero!")]
+        [Range(1, int.MaxValue, ErrorMessage = "ProjectId must be larger than zero!")]
         public int ProjectId { get; set; }
 
         [Range(30, int.MaxValue, ErrorMessage = "Can't log less than 30 minutes!")]

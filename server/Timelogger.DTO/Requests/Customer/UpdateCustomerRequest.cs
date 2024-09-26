@@ -7,7 +7,7 @@ namespace Timelogger.DTO.Requests.Customer
 {
     public class UpdateCustomerRequest
     {
-        [Range(0, int.MaxValue, ErrorMessage = "Id must be larger than zero!")]
+        [Range(1, int.MaxValue, ErrorMessage = "Id must be larger than zero!")]
         public int Id { get; set; }
 
         [Required]

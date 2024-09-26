@@ -11,5 +11,7 @@ namespace Timelogger.DTO.Responses.Customer
         public string Name { get; set; }
 
         public int DeveloperId { get; set; }
+
+        public string DeveloperName { get; set; }
     }
 }

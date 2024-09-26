@@ -16,6 +16,7 @@ namespace Timelogger.Entities
 
         // Navigation properties
         public Project Project { get; set; }
-        //public Developer Developer { get; set; }
+
+        public Developer Developer { get; set; }
     }
 }

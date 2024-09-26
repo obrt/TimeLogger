@@ -15,8 +15,14 @@ namespace Timelogger.DTO.Responses.Project
 
         public int DeveloperId { get; set; }
 
-        public DateTime Deadline { get; set; }
+        public string CustomerName { get; set; }
+
+        public string DeveloperName { get; set; }
+
+        public string Deadline { get; set; }
 
         public bool IsFinished { get; set; }
+
+        public int TotalTimeLogged { get; set; }
     }
 }

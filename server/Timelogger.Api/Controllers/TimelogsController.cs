@@ -24,7 +24,7 @@ namespace Timelogger.Api.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<IActionResult> Get(int id) // Display timelogs in days/hours/minutes in frontend based on the minutes from here.
+        public async Task<IActionResult> GetAll(int id) // Display timelogs in days/hours/minutes in frontend based on the minutes from here.
         {
             try
             {
@@ -42,7 +42,7 @@ namespace Timelogger.Api.Controllers
             }
         }
 
-        [HttpGet]
+        [HttpPost("getall")]
         public async Task<IActionResult> Get([FromBody][Required] GetAllTimelogsRequest request)
         {
             try
@@ -63,8 +63,7 @@ namespace Timelogger.Api.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Post([FromBody][Required] CreateTimelogRequest request) //TODO - frontend should allow for days/hours/minutes
-                                                                                                 //and recalculate all that in minutes fore creating request
+        public async Task<IActionResult> Post([FromBody][Required] CreateTimelogRequest request)                                                                                                 
         {
             try
             {

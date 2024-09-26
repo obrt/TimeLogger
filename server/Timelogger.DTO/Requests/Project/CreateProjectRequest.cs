@@ -10,10 +10,10 @@ namespace Timelogger.DTO.Requests.Project
         [Required]
         public string Name { get; set; }
 
-        [Range(0, int.MaxValue, ErrorMessage = "Id must be larger than zero!")]
+        [Range(1, int.MaxValue, ErrorMessage = "Id must be larger than zero!")]
         public int CustomerId { get; set; }
 
-        [Range(0, int.MaxValue, ErrorMessage = "Id must be larger than zero!")]
+        [Range(1, int.MaxValue, ErrorMessage = "Id must be larger than zero!")]
         public int DeveloperId { get; set; }
 
         [Required]

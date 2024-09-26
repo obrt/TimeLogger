@@ -7,16 +7,16 @@ namespace Timelogger.DTO.Responses.Timelog
 {
     public class GetTimelogResponse
     {
-        [Range(0, int.MaxValue, ErrorMessage = "Id must be larger than zero!")]
         public int Id { get; set; }
 
-        [Range(0, int.MaxValue, ErrorMessage = "Id must be larger than zero!")]
+        public string DeveloperName { get; set; }
+
+        public string ProjectName { get; set; }
+
+        public int TimeInMinutes { get; set; }
+
         public int DeveloperId { get; set; }
 
-        [Range(0, int.MaxValue, ErrorMessage = "Id must be larger than zero!")]
         public int ProjectId { get; set; }
-
-        [Range(30, int.MaxValue, ErrorMessage = "Can't log less than 30 minutes!")]
-        public int TimeInMinutes { get; set; }
     }
 }

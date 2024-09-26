@@ -14,38 +14,38 @@ using Timelogger.Entities;
 namespace Timelogger.Api.Controllers
 {
     [Route("api/[controller]")]
-	public class ProjectsController : Controller
-	{
-		private readonly IProjectService _projectService;
-		private readonly ILogger<ProjectsController> _logger;
+    public class ProjectsController : Controller
+    {
+        private readonly IProjectService _projectService;
+        private readonly ILogger<ProjectsController> _logger;
 
-		public ProjectsController(IProjectService projectService, ILogger<ProjectsController> logger)
-		{
-			_projectService = projectService;
-			_logger = logger;
-		}
+        public ProjectsController(IProjectService projectService, ILogger<ProjectsController> logger)
+        {
+            _projectService = projectService;
+            _logger = logger;
+        }
 
         [HttpGet("{id}")]
         public async Task<IActionResult> Get(int id)
-		{
-			try
-			{
+        {
+            try
+            {
                 var project = await _projectService.GetProjectAsync(id);
-				if (project == null) 
-				{
-					return NotFound();
-				}
-				return Ok(project);
-			}
-			catch (Exception ex) 
-			{
+                if (project == null)
+                {
+                    return NotFound();
+                }
+                return Ok(project);
+            }
+            catch (Exception ex)
+            {
                 _logger.LogError(ex, $"Exception occured while getting a project with Id {id}!");
                 return StatusCode(500, ex.Message);
-            }			
-		}
+            }
+        }
 
-        [HttpGet]
-        public async Task<IActionResult> Get([FromBody][Required] GetAllProjectsRequest request)
+        [HttpPost("getall")]
+        public async Task<IActionResult> GetAll([FromBody][Required] GetAllProjectsRequest request)
         {
             try
             {
@@ -65,46 +65,46 @@ namespace Timelogger.Api.Controllers
         }
 
         [HttpPost]
-		public async Task<IActionResult> Post([FromBody][Required] CreateProjectRequest request)
-		{
-			try
-			{
-				if (!ModelState.IsValid)
-				{
+        public async Task<IActionResult> Post([FromBody][Required] CreateProjectRequest request)
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                {
                     var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToList();
-					return BadRequest(errors);
+                    return BadRequest(errors);
                 }
                 var response = await _projectService.CreateProjectAsync(request);
 
-				return Ok(response);
+                return Ok(response);
             }
-			catch (Exception ex)
-			{
+            catch (Exception ex)
+            {
                 _logger.LogError(ex, $"Exception occured while creating a project!");
                 return StatusCode(500, ex.Message);
-            }			
-		}
+            }
+        }
 
-		[HttpPut]
-		public async Task<IActionResult> Put([FromBody][Required] UpdateProjectRequest request)
-		{
-			try
-			{
+        [HttpPost("updateProject")]
+        public async Task<IActionResult> Put([FromBody][Required] UpdateProjectRequest request)
+        {
+            try
+            {
                 if (!ModelState.IsValid)
-				{
+                {
                     var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToList();
                     return BadRequest(errors);
                 }
 
-				var response = await _projectService.UpdateProjectAsync(request);
-				return Ok(response);
+                var response = await _projectService.UpdateProjectAsync(request);
+                return Ok(response);
             }
-			catch (Exception ex)
-			{
+            catch (Exception ex)
+            {
                 _logger.LogError(ex, $"Exception occured while updating a project with Id {request.Id}!");
                 return StatusCode(500, ex.Message);
             }
-		}
+        }
 
         [HttpDelete]
         public async Task<IActionResult> Delete([FromBody][Required] DeleteProjectRequest request)
@@ -127,8 +127,8 @@ namespace Timelogger.Api.Controllers
             }
         }
 
-        [HttpPut]
-        public async Task<IActionResult> FinishProjects([FromBody][Required] FinishProjectsRequest request) //TODO check ModelState.IsValid when list is empty?
+        [HttpPost("finishProjects")]
+        public async Task<IActionResult> FinishProjects([FromBody][Required] FinishProjectsRequest request)
         {
             try
             {

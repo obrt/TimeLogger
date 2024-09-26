@@ -8,7 +8,7 @@ namespace Timelogger.BusinessLogic.Services
 {
     public interface IProjectService
     {
-        Task<GetProjectResponse> GetProjectAsync(int request);
+        Task<GetProjectResponse> GetProjectAsync(int id);
 
         Task<GetAllProjectsResponse> GetAllProjectsAsync(GetAllProjectsRequest request);
 

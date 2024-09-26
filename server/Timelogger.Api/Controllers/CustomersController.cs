@@ -42,8 +42,8 @@ namespace Timelogger.Api.Controllers
             }
         }
 
-        [HttpGet]
-        public async Task<IActionResult> Get([FromBody][Required] GetAllCustomersRequest request)
+        [HttpPost("getall")]
+        public async Task<IActionResult> GetAll([FromBody][Required] GetAllCustomersRequest request)
         {
             try
             {

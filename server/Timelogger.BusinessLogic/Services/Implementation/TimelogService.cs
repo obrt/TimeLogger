@@ -22,13 +22,15 @@ namespace Timelogger.BusinessLogic.Services.Implementation
 
         public async Task<GetTimelogResponse> GetTimelogAsync(int request)
         {
-            var timelog = await _context.Timelogs.FirstAsync(t => t.Id == request);
+            var timelog = await _context.Timelogs.FirstAsync(x => x.Id == request);
             var response = new GetTimelogResponse
             {
                 Id = timelog.Id,
+                ProjectName = timelog.Project.Name,
+                DeveloperName = timelog.Developer.FirstName + " " + timelog.Developer.LastName,
+                TimeInMinutes = timelog.TimeInMinutes,
                 ProjectId = timelog.ProjectId,
-                DeveloperId = timelog.DeveloperId,
-                TimeInMinutes = timelog.TimeInMinutes
+                DeveloperId = timelog.Developer.Id
             };
 
             return response;
@@ -36,7 +38,7 @@ namespace Timelogger.BusinessLogic.Services.Implementation
 
         public async Task<GetAllTimelogsResponse> GetAllTimelogsAsync(GetAllTimelogsRequest request)
         {
-            var timelogs = await _context.Timelogs.Where(t => t.DeveloperId == request.DeveloperId).ToListAsync();
+            var timelogs = await _context.Timelogs.Where(x => x.DeveloperId == request.DeveloperId).Include(x => x.Developer).Include(x => x.Project).ToListAsync();
             var response = new GetAllTimelogsResponse
             {
                 Timelogs = new List<GetTimelogResponse>()
@@ -47,9 +49,11 @@ namespace Timelogger.BusinessLogic.Services.Implementation
                 var singleTimelog = new GetTimelogResponse
                 {
                     Id = timelog.Id,
+                    ProjectName = timelog.Project.Name,
+                    DeveloperName = timelog.Developer.FirstName + " " + timelog.Developer.LastName,
+                    TimeInMinutes = timelog.TimeInMinutes,
                     ProjectId = timelog.ProjectId,
-                    DeveloperId = timelog.DeveloperId,
-                    TimeInMinutes = timelog.TimeInMinutes
+                    DeveloperId = timelog.Developer.Id
                 };
                 response.Timelogs.Add(singleTimelog);
             }
@@ -76,7 +80,7 @@ namespace Timelogger.BusinessLogic.Services.Implementation
 
         public async Task<UpdateTimelogResponse> UpdateTimelogAsync(UpdateTimelogRequest request)
         {
-            var timelog = await _context.Timelogs.FirstAsync(t => t.Id == request.Id);
+            var timelog = await _context.Timelogs.FirstAsync(x => x.Id == request.Id);
             timelog.ProjectId = request.ProjectId;
             timelog.DeveloperId = request.DeveloperId;
             timelog.TimeInMinutes = request.TimeInMinutes;
@@ -95,7 +99,7 @@ namespace Timelogger.BusinessLogic.Services.Implementation
             string timelogListString = string.Empty;
             foreach (var id in request.TimelogIds)
             {
-                var timelog = await _context.Timelogs.FirstOrDefaultAsync(t => t.Id == id);
+                var timelog = await _context.Timelogs.FirstOrDefaultAsync(x => x.Id == id);
                 timelogs.Add(timelog);
                 timelogListString += $" {timelog.Id},";
             }

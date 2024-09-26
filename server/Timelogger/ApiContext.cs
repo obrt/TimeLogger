@@ -19,40 +19,21 @@ namespace Timelogger
         {
             modelBuilder.Entity<Developer>()
                 .HasMany(d => d.Customers)
-                .WithOne(c => c.Developer)
-                .HasForeignKey(c => c.DeveloperId)
+                .WithOne(x => x.Developer)
+                .HasForeignKey(x => x.DeveloperId)
                 .OnDelete(DeleteBehavior.Cascade);
-
-            // Correct navigation properties if necessary
-            //modelBuilder.Entity<Developer>()
-            //    .HasMany(d => d.Projects)
-            //    .WithOne(p => p.Developer)
-            //    .HasForeignKey(p => p.DeveloperId)
-            //    .OnDelete(DeleteBehavior.Cascade);                      
-
-            //modelBuilder.Entity<Developer>()
-            //    .HasMany(d => d.Timelogs)
-            //    .WithOne(c => c.Developer)
-            //    .HasForeignKey(c => c.DeveloperId)
-            //    .OnDelete(DeleteBehavior.Cascade);
-
+                
             modelBuilder.Entity<Project>()
-                .HasMany(p => p.Timelogs)
-                .WithOne(t => t.Project)
-                .HasForeignKey(t => t.ProjectId)
+                .HasMany(x => x.Timelogs)
+                .WithOne(x => x.Project)
+                .HasForeignKey(x => x.ProjectId)
                 .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<Customer>()
-                .HasMany(c => c.Projects)
-                .WithOne(p => p.Customer)
-                .HasForeignKey(p => p.CustomerId)
+                .HasMany(x => x.Projects)
+                .WithOne(x => x.Customer)
+                .HasForeignKey(x => x.CustomerId)
                 .OnDelete(DeleteBehavior.Cascade);
-
-            //modelBuilder.Entity<Timelog>()
-            //    .HasOne(t => t.Developer)
-            //    .WithMany(d => d.Timelogs)
-            //    .HasForeignKey(t => t.DeveloperId)
-            //    .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }
